@@ -253,16 +253,16 @@ export default function Home() {
           <Table className="table no-print" variant="simple">
             <Thead>
               <Tr>
-                {Object.values(EFields).map((field) => (
-                  <Th>{field}</Th>
+                {Object.values(EFields).map((field, i) => (
+                  <Th key={i}>{field}</Th>
                 ))}
               </Tr>
             </Thead>
             <Tbody>
               {fields.map((item, index) => (
-                <Tr>
+                <Tr key={index}>
                   {Object.values(EFields).map((field) => (
-                    <Td>{item[field]}</Td>
+                    <Td key={item[field]}>{item[field]}</Td>
                   ))}
                 </Tr>
               ))}
@@ -273,7 +273,7 @@ export default function Home() {
       {fields.length > 0 && (
         <>
           {new Array(Math.ceil(fields.length / 6)).fill(0).map((itm, i) => (
-            <div className="print">
+            <div className="print" key={i}>
               {fields
                 .slice(i * 6, i * 6 + 6)
 
