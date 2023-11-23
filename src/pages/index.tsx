@@ -1,11 +1,77 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from "next/head";
+import { Inter } from "next/font/google";
+import { ChangeEventHandler, FC, MouseEventHandler, useState } from "react";
+import * as XLSX from "xlsx";
+import "../styles/Home.module.css";
+import Image from "next/image";
+const inter = Inter({ subsets: ["latin"] });
 
-const inter = Inter({ subsets: ['latin'] })
+enum EFields {
+  SN = "SN",
+  NAME = "NAME",
+  ADDRESS = "ADDRESS",
+  PHONE = "PHONE",
+  PRODUCT = "PRODUCT",
+  COD = "COD",
+  BRANCH = "BRANCH",
+}
 
 export default function Home() {
+  const [fields, setFields] = useState<Record<EFields, string>[]>([]);
+
+  const handlePrint: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    window.print();
+  };
+
+  const readUploadFile: ChangeEventHandler<HTMLInputElement> = (e) => {
+    e.preventDefault();
+    const file = e?.target?.files?.[0];
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const binaryString = event.target?.result;
+      const workbook = XLSX.read(binaryString, { type: "binary" });
+      const sheetName = workbook.SheetNames[0]; // Assuming reading the first sheet
+
+      const sheet = workbook.Sheets[sheetName];
+      const excelData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+      const headerRow = (excelData?.[0] as string[]) || [];
+      const headerRowKeys = headerRow.map((header) => header.toUpperCase());
+
+      const dataRows = excelData.slice(1) as string[][];
+
+      const fields = Object.values(EFields);
+
+      const fieldsIndex = fields.reduce((acc, field) => {
+        if (headerRowKeys.indexOf(field) !== -1)
+          acc[field] = headerRowKeys.indexOf(field) as number;
+        return acc;
+      }, {} as Record<EFields, number>);
+
+      console.log("fields", fieldsIndex);
+
+      const dataRowsObj = dataRows.map((row) => {
+        return fields.reduce((acc, cell, index) => {
+          return {
+            ...acc,
+            [cell]: row[fieldsIndex[cell as EFields] as number] as Record<
+              EFields,
+              string
+            >[EFields],
+          };
+        }, {} as Record<EFields, string>);
+      });
+
+      setFields(dataRowsObj);
+    };
+
+    if (file) {
+      reader.readAsBinaryString(file);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -14,101 +80,126 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`${styles.main} ${inter.className}`}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>src/pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
+      <div className="no-print">
+        <form>
+          <label htmlFor="upload">Upload File</label>
+          <input
+            type="file"
+            name="upload"
+            id="upload"
+            onChange={readUploadFile}
+          />
+        </form>
 
-        <div className={styles.center}>
+        <div>
+          <button onClick={handlePrint}>Print</button>
+        </div>
+      </div>
+      {fields.length > 0 && (
+        <>
+          {new Array(Math.ceil(fields.length / 6)).fill(0).map((itm, i) => (
+            <div className="print">
+              {fields
+                .slice(i * 6, i * 6 + 6)
+
+                .map((item, index) => (
+                  <Card {...item} key={index} />
+                ))}
+            </div>
+          ))}
+        </>
+      )}
+    </>
+  );
+}
+
+const Card: FC<Record<EFields, string>> = ({
+  SN,
+  NAME,
+  ADDRESS,
+  PHONE,
+  PRODUCT,
+  COD,
+  BRANCH,
+}) => {
+  return (
+    <div className="card">
+      <div className="card-header">
+        <div className="logo">
           <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
+            src="/logo.png"
+            alt="Picture of the author"
+            width={200}
+            height={50}
           />
         </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
+        <div className="company">
+          <p className="name">Today Trend Online Shopping</p>
+          <p className="add">Ranibari, Kathmandu</p>
         </div>
-      </main>
-    </>
-  )
-}
+
+        <div className="customer-info">
+          <table>
+            <tbody>
+              <tr>
+                <td>Name:</td>
+                <td>{NAME}</td>
+              </tr>
+
+              <tr>
+                <td>Address:</td>
+                <td>{ADDRESS}</td>
+              </tr>
+
+              <tr>
+                <td>Phone:</td>
+                <td>{PHONE}</td>
+              </tr>
+
+              <tr>
+                <td>Product:</td>
+                <td>{PRODUCT}</td>
+              </tr>
+
+              <tr>
+                <td>Branch:</td>
+                <td>{BRANCH}</td>
+              </tr>
+
+              <tr>
+                <td>COD:</td>
+                <td>{COD}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="card-footer">
+          <p>Thank you for shopping with us</p>
+          <p>+977 970-3726062</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// {fields.length > 0 && (
+//   <table className={styles.table}>
+//     <thead>
+//       <tr>
+//         {Object.values(EFields).map((field) => (
+//           <th>{field}</th>
+//         ))}
+//       </tr>
+//     </thead>
+//     <tbody>
+//       {fields.map((item, index) => (
+//         <tr>
+//           {Object.values(EFields).map((field) => (
+//             <td>{item[field]}</td>
+//           ))}
+//         </tr>
+//       ))}
+//     </tbody>
+//   </table>
+// )}
