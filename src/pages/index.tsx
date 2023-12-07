@@ -4,18 +4,20 @@ import { ChangeEventHandler, FC, MouseEventHandler, useState } from "react";
 import * as XLSX from "xlsx";
 import "../styles/Home.module.css";
 import Image from "next/image";
-
 import {
   Button,
+  Card,
+  CardBody,
+  Checkbox,
   Container,
   FormControl,
   FormHelperText,
   FormLabel,
+  Heading,
   Input,
+  Stack,
   chakra,
-} from "@chakra-ui/react";
-const inter = Inter({ subsets: ["latin"] });
-import {
+  Text,
   Table,
   Thead,
   Tbody,
@@ -24,6 +26,7 @@ import {
   Td,
   TableContainer,
 } from "@chakra-ui/react";
+const inter = Inter({ subsets: ["latin"] });
 
 enum EVendor {
   TODAYTREND = "TODAYTREND",
@@ -42,38 +45,6 @@ enum EFields {
   BRANCH = "BRANCH",
   VENDOR = "VENDOR",
 }
-
-// const vendors = [
-//   {
-//     vendor: EVendor.TODAYTREND,
-//     name: "Today Trend",
-//     address: "Kathmandu",
-//     phone: "+977 982-0135145",
-//     logo: "today_trend_logo.png",
-//   },
-//   {
-//     vendor: EVendor.DRESSBERRY,
-//     name: "Dress Berry",
-//     address: "Kathmandu",
-//     phone: "+977 982-0135145",
-//     logo: "dress_berry_logo.png",
-//   },
-//   {
-//     vendor: EVendor.MANTRAMART,
-
-//     name: "Mantra Mart",
-//     address: "Kathmandu",
-//     phone: "+977 982-0135145",
-//     logo: "mantra_mart_logo.png",
-//   },
-//   {
-//     vendor: EVendor.VANESSA,
-//     name: "Vanessa",
-//     address: "Kathmandu",
-//     phone: "+977 982-0135145",
-//     logo: "vanessa_logo.png",
-//   },
-// ];
 
 const vendor: Record<
   EVendor,
@@ -115,8 +86,11 @@ type TField = Record<EFields, string> &
     VENDOR: EVendor;
   }[];
 
+type TLabelSize = 6 | 8;
+
 export default function Home() {
   const [fields, setFields] = useState<TField[]>([]);
+  const [labelType, setLabelType] = useState<TLabelSize>(8);
 
   const handlePrint: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
@@ -209,38 +183,37 @@ export default function Home() {
             </FormHelperText>
           </FormControl>
 
-          {/* <Stack direction="row" spacing="3" my={2}>
-            {vendors.map((vendor, index) => (
+          <Stack direction="row" spacing="3" my={2}>
+            {([8, 6] as TLabelSize[]).map((paper, index) => (
               <Card
+                key={index}
                 maxW="sm"
-                variant={selectedVendors === index ? "filled" : "outline"}
+                variant={labelType === paper ? "filled" : "outline"}
+                border={labelType === paper ? "2px solid" : "none"}
+                borderColor="teal.500"
                 cursor="pointer"
-                onClick={() => setSelectedVendors(index)}
+                onClick={() => setLabelType(paper)}
               >
                 <CardBody>
                   <Stack spacing="3">
                     <Stack direction="row" justifyContent="space-between">
-                      <Heading size="md">{vendor?.name}</Heading>
+                      <Heading size="md">
+                        Select Paper Size: {paper} Labels
+                      </Heading>
 
                       <Checkbox
                         colorScheme="green"
                         size="lg"
-                        isChecked={selectedVendors === index}
+                        isChecked={labelType === paper}
                       />
                     </Stack>
-                    <Text>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Voluptas, voluptatum.
-                    </Text>
-                    <Text>{vendor?.address}</Text>
-                    <Text color="blue.600" fontSize="2xl">
-                      {vendor?.phone}
-                    </Text>
+                    <Text>{paper} Labels per page. </Text>
+                    <Text color="blue.600">A4 Size</Text>
                   </Stack>
                 </CardBody>
               </Card>
             ))}
-          </Stack> */}
+          </Stack>
 
           <Button onClick={handlePrint} variant="outline" colorScheme="teal">
             Print
@@ -272,48 +245,47 @@ export default function Home() {
       </TableContainer>
       {fields.length > 0 && (
         <>
-          {new Array(Math.ceil(fields.length / 6)).fill(0).map((itm, i) => (
-            <div className="print" key={i}>
-              {fields
-                .slice(i * 6, i * 6 + 6)
-
-                .map((item, index) => (
-                  <BillCard {...item} key={index} />
-                ))}
-            </div>
-          ))}
+          {new Array(Math.ceil(fields.length / labelType))
+            .fill(0)
+            .map((itm, i) => (
+              <div className="print" key={i}>
+                {fields
+                  .slice(i * labelType, i * labelType + labelType)
+                  .map((item, index) => (
+                    <BillCard {...item} labelType={labelType} key={index} />
+                  ))}
+              </div>
+            ))}
         </>
       )}
     </>
   );
 }
 
-const BillCard: FC<Record<EFields, string>> = ({
-  NAME,
-  ADDRESS,
-  PHONE,
-  PRODUCT,
-  COD,
-  BRANCH,
-  VENDOR,
-}) => {
+const BillCard: FC<
+  Record<EFields, string> & {
+    labelType: number;
+  }
+> = ({ NAME, ADDRESS, PHONE, PRODUCT, COD, BRANCH, VENDOR, labelType = 8 }) => {
   const selectedVendor =
     vendor?.[VENDOR as EVendor] || vendor[EVendor.TODAYTREND];
   return (
-    <div className="card-container">
+    <div className={`card-container card-${labelType}`}>
       <div className="card">
         <div className="card-header">
-          <div className="logo">
-            <Image
-              src={"/" + selectedVendor?.logo.toLowerCase().replace(" ", "_")}
-              alt="Picture of the author"
-              width={200}
-              height={50}
-              style={{
-                filter: "grayscale(100%)",
-              }}
-            />
-          </div>
+          {labelType !== 8 && (
+            <div className="logo">
+              <Image
+                src={"/" + selectedVendor?.logo.toLowerCase().replace(" ", "_")}
+                alt="Picture of the author"
+                width={200}
+                height={50}
+                style={{
+                  filter: "grayscale(100%)",
+                }}
+              />
+            </div>
+          )}
           <div className="company">
             <p className="name">{selectedVendor?.name}</p>
             <p className="add">{selectedVendor?.address}</p>
