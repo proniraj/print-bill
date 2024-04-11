@@ -33,6 +33,7 @@ enum EVendor {
   DRESSBERRY = "DRESSBERRY",
   MANTRAMART = "MANTRAMART",
   VANESSA = "VANESSA",
+  DALICART = "DALICART",
 }
 
 enum EFields {
@@ -78,6 +79,12 @@ const vendor: Record<
     address: "Ranibari, Kathmandu",
     phone: "+977 982-0135145",
     logo: "vanessa_logo.png",
+  },
+  DALICART: {
+    name: "Dali.Com",
+    address: "Kathmandu, Sorakhutte",
+    phone: "+977 01-4952477",
+    logo: "dali_cart_logo.png",
   },
 };
 
