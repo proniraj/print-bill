@@ -1,7 +1,5 @@
 import Head from "next/head";
-import { Inter } from "next/font/google";
-import { ChangeEventHandler, FC, MouseEventHandler, useState } from "react";
-import * as XLSX from "xlsx";
+import { FC, MouseEventHandler, useState } from "react";
 import "../styles/Home.module.css";
 import Image from "next/image";
 import {
@@ -25,27 +23,10 @@ import {
   Th,
   Td,
   TableContainer,
+  HStack,
 } from "@chakra-ui/react";
-const inter = Inter({ subsets: ["latin"] });
-
-enum EVendor {
-  TODAYTREND = "TODAYTREND",
-  DRESSBERRY = "DRESSBERRY",
-  MANTRAMART = "MANTRAMART",
-  VANESSA = "VANESSA",
-  DALICART = "DALICART",
-}
-
-enum EFields {
-  SN = "SN",
-  NAME = "NAME",
-  ADDRESS = "ADDRESS",
-  PHONE = "PHONE",
-  PRODUCT = "PRODUCT",
-  COD = "COD",
-  BRANCH = "BRANCH",
-  VENDOR = "VENDOR",
-}
+import Link from "next/link";
+import parseSheetInputData, { EFields, EVendor } from "@/utils/fileReader";
 
 const vendor: Record<
   EVendor,
@@ -104,53 +85,6 @@ export default function Home() {
     window.print();
   };
 
-  const readUploadFile: ChangeEventHandler<HTMLInputElement> = (e) => {
-    e.preventDefault();
-    const file = e?.target?.files?.[0];
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      const binaryString = event.target?.result;
-      const workbook = XLSX.read(binaryString, { type: "binary" });
-      const sheetName = workbook.SheetNames[0]; // Assuming reading the first sheet
-
-      const sheet = workbook.Sheets[sheetName];
-      const excelData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-      const headerRow = (excelData?.[0] as string[]) || [];
-      const headerRowKeys = headerRow.map((header) => header.toUpperCase());
-
-      const dataRows = (excelData.slice(1) as string[][]).filter(
-        (item) => item?.length > 0
-      );
-
-      const fields = Object.values(EFields);
-
-      const fieldsIndex = fields.reduce((acc, field) => {
-        if (headerRowKeys.indexOf(field) !== -1)
-          acc[field] = headerRowKeys.indexOf(field) as number;
-        return acc;
-      }, {} as Record<EFields, number>);
-
-      const dataRowsObj = dataRows.map((row) => {
-        return fields.reduce((acc, cell, index) => {
-          return {
-            ...acc,
-            [cell]: row[
-              fieldsIndex[cell as EFields] as number
-            ] as TField[EFields],
-          };
-        }, {} as TField);
-      });
-
-      setFields(dataRowsObj);
-    };
-
-    if (file) {
-      reader.readAsBinaryString(file);
-    }
-  };
-
   return (
     <>
       <Head>
@@ -167,64 +101,81 @@ export default function Home() {
         color="#262626"
       >
         <chakra.form>
-          <FormControl isInvalid={false}>
-            <FormLabel>Upload File</FormLabel>
-            <Input
-              type="file"
-              name="upload"
-              id="upload"
-              onChange={readUploadFile}
-              accept=".xlsx"
-            />
-            <FormHelperText>
-              Download the template file.{" "}
+          <Stack spacing={4}>
+            <FormControl isInvalid={false}>
+              <FormLabel>Upload File</FormLabel>
+              <Input
+                type="file"
+                name="upload"
+                id="upload"
+                onChange={(e) => parseSheetInputData(e, setFields)}
+                accept=".xlsx"
+              />
+              <FormHelperText>
+                Download the template file.{" "}
+                <Button
+                  as={"a"}
+                  href="/template.xlsx"
+                  download
+                  variant="link"
+                  colorScheme="teal"
+                >
+                  Download Template
+                </Button>
+              </FormHelperText>
+            </FormControl>
+
+            <Stack direction="row" spacing="3" my={2}>
+              {([8, 6] as TLabelSize[]).map((paper, index) => (
+                <Card
+                  key={index}
+                  maxW="sm"
+                  variant={labelType === paper ? "filled" : "outline"}
+                  border={labelType === paper ? "2px solid" : "none"}
+                  borderColor="teal.500"
+                  cursor="pointer"
+                  onClick={() => setLabelType(paper)}
+                >
+                  <CardBody>
+                    <Stack spacing="3">
+                      <Stack direction="row" justifyContent="space-between">
+                        <Heading size="md">
+                          Select Paper Size: {paper} Labels
+                        </Heading>
+
+                        <Checkbox
+                          colorScheme="green"
+                          size="lg"
+                          isChecked={labelType === paper}
+                        />
+                      </Stack>
+                      <Text>{paper} Labels per page. </Text>
+                      <Text color="blue.600">A4 Size</Text>
+                    </Stack>
+                  </CardBody>
+                </Card>
+              ))}
+            </Stack>
+
+            <HStack>
               <Button
-                as={"a"}
-                href="/template.xlsx"
-                download
+                onClick={handlePrint}
+                variant="outline"
+                colorScheme="teal"
+              >
+                Print
+              </Button>
+
+              <Button
+                as={Link}
+                href="/voucher"
                 variant="link"
                 colorScheme="teal"
               >
-                Download Template
+                Voucher Print
               </Button>
-            </FormHelperText>
-          </FormControl>
-
-          <Stack direction="row" spacing="3" my={2}>
-            {([8, 6] as TLabelSize[]).map((paper, index) => (
-              <Card
-                key={index}
-                maxW="sm"
-                variant={labelType === paper ? "filled" : "outline"}
-                border={labelType === paper ? "2px solid" : "none"}
-                borderColor="teal.500"
-                cursor="pointer"
-                onClick={() => setLabelType(paper)}
-              >
-                <CardBody>
-                  <Stack spacing="3">
-                    <Stack direction="row" justifyContent="space-between">
-                      <Heading size="md">
-                        Select Paper Size: {paper} Labels
-                      </Heading>
-
-                      <Checkbox
-                        colorScheme="green"
-                        size="lg"
-                        isChecked={labelType === paper}
-                      />
-                    </Stack>
-                    <Text>{paper} Labels per page. </Text>
-                    <Text color="blue.600">A4 Size</Text>
-                  </Stack>
-                </CardBody>
-              </Card>
-            ))}
+            </HStack>
           </Stack>
-
-          <Button onClick={handlePrint} variant="outline" colorScheme="teal">
-            Print
-          </Button>
         </chakra.form>
       </Container>
 
