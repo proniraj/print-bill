@@ -183,14 +183,13 @@ const Card: FC<CardProps> = ({ label }) => {
     <div
       style={{
         padding: "10px",
-        border: "1px solid black",
         position: "relative",
       }}
     >
       <p
         style={{
           position: "absolute",
-          top: "36%",
+          top: "33%",
           left: "28.92%",
           width: "calc(100% - 30%)",
           height: "auto",
