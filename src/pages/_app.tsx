@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react";
+import DashboardLayout from "../components/Layout/DashboardLayout";
 
 import { ChakraBaseProvider, extendBaseTheme } from "@chakra-ui/react";
 // `@chakra-ui/theme` is a part of the base install with `@chakra-ui/react`
@@ -13,7 +14,9 @@ import { ChakraBaseProvider, extendBaseTheme } from "@chakra-ui/react";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
-      <Component {...pageProps} />
+      <DashboardLayout>
+        <Component {...pageProps} />
+      </DashboardLayout>
     </ChakraProvider>
   );
 }

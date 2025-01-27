@@ -1,4 +1,4 @@
-.table {
+/* .table {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #ddd;
@@ -34,10 +34,10 @@
 
 .table td {
   border: 1px solid #ddd;
-}
+} */
 
 /* Print setting */
-@media print {
+/* @media print {
   .print {
     width: 595px;
     height: 842px;
@@ -47,10 +47,10 @@
     width: 3.902in;
     height: 3.677in;
     background-color: red;
-  }
+  } */
 
-  /* hide all except print */
-  .no-print,
+/* hide all except print */
+/* .no-print,
   .no-print * {
     display: none !important;
   }
@@ -67,4 +67,4 @@
   width: 3.902in;
   height: 3.677in;
   background-color: red;
-}
+} */
