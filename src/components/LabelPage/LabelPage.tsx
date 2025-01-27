@@ -13,7 +13,15 @@ export const LabelPage: FC<LabelPageProps> = ({ data, labelType }) => {
   const pages = Math.ceil(data.length / labelsPerPage);
 
   return [...Array(pages)].map((_, pageIndex) => (
-    <Box className="print" key={pageIndex}>
+    <Box
+      key={pageIndex}
+      className="print"
+      sx={{
+        display: "block",
+        pageBreakAfter: "always",
+        pageBreakInside: "avoid",
+      }}
+    >
       <Box
         className="print-page"
         sx={{
@@ -25,8 +33,12 @@ export const LabelPage: FC<LabelPageProps> = ({ data, labelType }) => {
           width: "8.27in",
           height: "11.69in",
           padding: "0.346in 0.25in 0 0.25in",
-          pageBreakAfter: "always",
-          pageBreakInside: "avoid",
+          backgroundColor: "white",
+          boxSizing: "border-box",
+          "@media print": {
+            pageBreakAfter: "always",
+            pageBreakInside: "avoid",
+          },
         }}
       >
         {data
@@ -38,7 +50,12 @@ export const LabelPage: FC<LabelPageProps> = ({ data, labelType }) => {
                 width: "3.902in",
                 height: labelType === 8 ? "2.775in" : "3.776in",
                 padding: "0.185in",
-                pageBreakInside: "avoid",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                "@media print": {
+                  pageBreakInside: "avoid",
+                },
               }}
             >
               <LabelCard labelType={labelType} {...item} />

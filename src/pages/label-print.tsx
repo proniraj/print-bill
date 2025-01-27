@@ -33,31 +33,23 @@ const Page = () => {
   const handlePrint = useReactToPrint({
     contentRef: printContentRef,
     documentTitle: `Labels-${new Date().toISOString().split("T")[0]}`,
-    bodyClass: "print-page",
-    copyShadowRoots: true,
-    // print: (target) => {
-    //   console.log(target);
-    //   return Promise.resolve(window.print());
-    // },
-    onAfterPrint: () => {
-      console.log("Print completed");
-    },
     pageStyle: `
       @page {
         size: A4;
         margin: 0;
       }
-      @media print {
-        body {
-          margin: 0;
-          padding: 0;
-        }
-        .print-page {
-          page-break-after: always;
-        }
-        .no-print {
-          display: none !important;
-        }
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 8.27in;
+        height: 11.69in;
+      }
+      .print-page {
+        page-break-after: always;
+        page-break-inside: avoid;
+      }
+      .no-print {
+        display: none !important;
       }
     `,
   });

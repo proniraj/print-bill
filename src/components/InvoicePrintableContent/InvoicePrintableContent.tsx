@@ -1,17 +1,16 @@
 import { forwardRef } from "react";
 import { Box } from "@chakra-ui/react";
-import LabelPage from "../LabelPage/LabelPage";
+import InvoicePage from "../InvoicePage/InvoicePage";
 import { ParsedData } from "@/utils/sheetParser";
 
-interface PrintableContentProps {
+interface InvoicePrintableContentProps {
   data: ParsedData;
-  labelType: 6 | 8;
 }
 
-export const PrintableContent = forwardRef<
+export const InvoicePrintableContent = forwardRef<
   HTMLDivElement,
-  PrintableContentProps
->(({ data, labelType }, ref) => {
+  InvoicePrintableContentProps
+>(({ data }, ref) => {
   return (
     <Box
       ref={ref}
@@ -26,25 +25,24 @@ export const PrintableContent = forwardRef<
       <style>
         {`
           @page { 
-            size: A4; 
+            size: A5 portrait;
             margin: 0;
           }
           @media print {
             html, body { 
-              width: 8.27in;
-              height: 11.69in;
+              width: 148mm;
+              height: 210mm;
               margin: 0;
               padding: 0;
             }
             .print { 
               display: block !important;
-              height: auto;
-              max-height: 11.69in;
-              width: 8.27in;
-              padding: 0;
-              line-height: 0.5;
             }
             .print-page { 
+              width: 148mm;
+              min-height: 209mm;
+              padding: 10mm;
+              margin: 0 auto;
               page-break-after: always;
               page-break-inside: avoid;
             }
@@ -54,11 +52,11 @@ export const PrintableContent = forwardRef<
           }
         `}
       </style>
-      <LabelPage data={data} labelType={labelType} />
+      <InvoicePage data={data} />
     </Box>
   );
 });
 
-PrintableContent.displayName = "PrintableContent";
+InvoicePrintableContent.displayName = "InvoicePrintableContent";
 
-export default PrintableContent;
+export default InvoicePrintableContent;

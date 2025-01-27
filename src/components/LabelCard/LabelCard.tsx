@@ -49,55 +49,111 @@ interface LabelCardProps extends Record<string, string | number> {
 }
 
 const CustomerInfo: FC<any> = ({ data, labelType }) => (
-  <Box className="customer-info" overflow="hidden">
-    <Table size="sm" variant="unstyled" sx={{ tableLayout: "fixed" }}>
+  <Box className="customer-info" overflow="hidden" flex="1">
+    <Table
+      size="sm"
+      variant="unstyled"
+      sx={{
+        tableLayout: "fixed",
+        width: "100%",
+        borderCollapse: "collapse",
+      }}
+    >
       <tbody>
         <Tr>
-          <Td width="55px" px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
+          <Td
+            width="45px"
+            px={1}
+            py={0.5}
+            whiteSpace="nowrap"
+            fontSize={labelType === 8 ? "9px" : "11px"}
+          >
             Name
           </Td>
-          <Td px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
-            <Text isTruncated>{data?.["CUSTOMER NAME"]}</Text>
+          <Td px={1} py={0.5}>
+            <Text isTruncated fontSize={labelType === 8 ? "9px" : "11px"}>
+              {data?.["CUSTOMER NAME"]}
+            </Text>
           </Td>
         </Tr>
         <Tr>
-          <Td width="55px" px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
+          <Td
+            width="45px"
+            px={1}
+            py={0.5}
+            whiteSpace="nowrap"
+            fontSize={labelType === 8 ? "9px" : "11px"}
+          >
             Address
           </Td>
-          <Td px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
-            <Text isTruncated>{data?.["FULL ADDRESS"]}</Text>
+          <Td px={1} py={0.5}>
+            <Text isTruncated fontSize={labelType === 8 ? "9px" : "11px"}>
+              {data?.["FULL ADDRESS"]}
+            </Text>
           </Td>
         </Tr>
         <Tr>
-          <Td width="55px" px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
+          <Td
+            width="45px"
+            px={1}
+            py={0.5}
+            whiteSpace="nowrap"
+            fontSize={labelType === 8 ? "9px" : "11px"}
+          >
             Phone
           </Td>
-          <Td px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
-            <Text isTruncated>{data?.["CELL NUMBER"]}</Text>
+          <Td px={1} py={0.5}>
+            <Text isTruncated fontSize={labelType === 8 ? "9px" : "11px"}>
+              {data?.["CELL NUMBER"]}
+            </Text>
           </Td>
         </Tr>
         <Tr>
-          <Td width="55px" px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
+          <Td
+            width="45px"
+            px={1}
+            py={0.5}
+            whiteSpace="nowrap"
+            fontSize={labelType === 8 ? "9px" : "11px"}
+          >
             Product
           </Td>
-          <Td px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
-            <Text isTruncated>{data?.["PRODUCT"]}</Text>
+          <Td px={1} py={0.5}>
+            <Text isTruncated fontSize={labelType === 8 ? "9px" : "11px"}>
+              {data?.["PRODUCT"]}
+            </Text>
           </Td>
         </Tr>
         <Tr>
-          <Td width="55px" px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
+          <Td
+            width="45px"
+            px={1}
+            py={0.5}
+            whiteSpace="nowrap"
+            fontSize={labelType === 8 ? "9px" : "11px"}
+          >
             Branch
           </Td>
-          <Td px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
-            <Text isTruncated>{data?.["BRANCH"]}</Text>
+          <Td px={1} py={0.5}>
+            <Text isTruncated fontSize={labelType === 8 ? "9px" : "11px"}>
+              {data?.["BRANCH"]}
+            </Text>
           </Td>
         </Tr>
         <Tr>
-          <Td width="55px" px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
+          <Td
+            width="45px"
+            px={1}
+            py={0.5}
+            whiteSpace="nowrap"
+            fontSize={labelType === 8 ? "9px" : "11px"}
+          >
             COD
           </Td>
-          <Td px={0.5} py={labelType === 8 ? 0.25 : 0.5}>
-            <Text isTruncated>{data?.["COD"]}</Text>
+          <Td px={1} py={0.5}>
+            <Text isTruncated fontSize={labelType === 8 ? "9px" : "11px"}>
+              {data?.["COD"]}
+            </Text>
           </Td>
         </Tr>
       </tbody>
@@ -109,15 +165,15 @@ const CompanyInfo: FC<{
   vendor: (typeof vendor)[EVendor];
   labelType: number;
 }> = ({ vendor, labelType }) => (
-  <Box className="company" textAlign="center" mb={1}>
+  <Box textAlign="center" mb={1}>
     <Text
-      fontSize={labelType === 8 ? "14px" : "16px"}
+      fontSize={labelType === 8 ? "11px" : "13px"}
       fontWeight="bold"
-      lineHeight="1.2"
+      lineHeight="1.1"
     >
       {vendor.name}
     </Text>
-    <Text fontSize={labelType === 8 ? "12px" : "14px"} lineHeight="1.2">
+    <Text fontSize={labelType === 8 ? "9px" : "11px"} lineHeight="1.1">
       {vendor.address}
     </Text>
   </Box>
@@ -148,27 +204,29 @@ export const LabelCard: FC<LabelCardProps> = (props) => {
 
   return (
     <Box
-      className="card"
       sx={{
         width: "100%",
         height: "100%",
         border: "1px solid black",
         borderRadius: "0.185in",
-        padding: labelType === 8 ? "0.08in" : "0.185in",
+        padding: labelType === 8 ? "0.06in" : "0.12in",
         display: "flex",
         flexDirection: "column",
-        gap: labelType === 8 ? "0.03in" : "0.1in",
-        fontSize: labelType === 8 ? "10px" : "14px",
+        gap: labelType === 8 ? "0.02in" : "0.08in",
+        fontSize: labelType === 8 ? "9px" : "11px",
+        overflow: "hidden",
+        "@media print": {
+          pageBreakInside: "avoid",
+        },
       }}
     >
       <CompanyInfo vendor={selectedVendor} labelType={labelType} />
       <CustomerInfo data={props} labelType={labelType} />
       <Box
-        className="card-footer"
         textAlign="center"
-        fontSize={labelType === 8 ? "9px" : "12px"}
+        fontSize={labelType === 8 ? "8px" : "10px"}
         mt="auto"
-        lineHeight="1.1"
+        lineHeight="1"
       >
         <Text>Thank you for shopping with us</Text>
         <Text>{selectedVendor.phone}</Text>
