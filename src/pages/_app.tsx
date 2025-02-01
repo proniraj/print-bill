@@ -3,7 +3,8 @@ import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react";
 import DashboardLayout from "../components/Layout/DashboardLayout";
 
-import { ChakraBaseProvider, extendBaseTheme } from "@chakra-ui/react";
+// import { ChakraBaseProvider, extendBaseTheme } from "@chakra-ui/react";
+import Head from "next/head";
 // `@chakra-ui/theme` is a part of the base install with `@chakra-ui/react`
 // import chakraTheme from "@chakra-ui/theme";
 
@@ -13,10 +14,15 @@ import { ChakraBaseProvider, extendBaseTheme } from "@chakra-ui/react";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ChakraProvider>
-      <DashboardLayout>
-        <Component {...pageProps} />
-      </DashboardLayout>
-    </ChakraProvider>
+    <>
+      <Head>
+        <title>Seetar Invoice</title>
+      </Head>
+      <ChakraProvider>
+        <DashboardLayout>
+          <Component {...pageProps} />
+        </DashboardLayout>
+      </ChakraProvider>
+    </>
   );
 }
