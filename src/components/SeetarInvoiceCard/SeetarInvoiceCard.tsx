@@ -13,6 +13,7 @@ import {
   Divider,
   TableContainer,
   Stack,
+  Tfoot,
 } from "@chakra-ui/react";
 import { numberToWords } from "amount-to-words";
 
@@ -27,20 +28,9 @@ interface ParsedItem {
 }
 
 const itemPricesByCode = {
-  SB101: 2000,
-  SB102: 2000,
-  SB103: 2000,
-  SB104: 2000,
-  SB105: 2000,
-  SB106: 2000,
-  SB107: 2000,
-  SB108: 2000,
-  SB109: 2000,
-  SB110: 2000,
-  SB201: 2000,
-  SB202: 2000,
-  SB203: 2000,
-  SB205: 2000,
+  SB101: 2200,
+  SB102: 2200,
+  SB103: 3500,
 };
 
 const formatCurrency = (amount: number) => {
@@ -58,7 +48,7 @@ const parseProducts = (productString: string = ""): ParsedItem[] => {
       const quantityMatch = colorSection.match(/\*(\d+)$/);
       const quantity = quantityMatch ? parseInt(quantityMatch[1]) : 1;
       const rate =
-        itemPricesByCode[codeSection as keyof typeof itemPricesByCode] || 2000;
+        itemPricesByCode[codeSection as keyof typeof itemPricesByCode] ?? 2200;
 
       return {
         sno: index + 1,
@@ -183,7 +173,13 @@ export const SeetarInvoiceCard: FC<SeetarInvoiceCardProps> = (data) => {
         </VStack>
 
         <Text textAlign="right">
-          Date: {data["INVOICE DATE"] || new Date().toLocaleDateString()}
+          Date:{" "}
+          {data["INVOICE DATE"] ||
+            new Date().toLocaleDateString("en-US", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
         </Text>
       </Box>
 
@@ -197,11 +193,18 @@ export const SeetarInvoiceCard: FC<SeetarInvoiceCardProps> = (data) => {
           borderStyle="solid"
         >
           <Thead>
-            <Tr bg="gray.50">
+            <Tr
+              bg="gray.50"
+              sx={{
+                th: {
+                  width: "100px",
+                },
+              }}
+            >
               <Th border="1px" borderColor="gray.300">
                 S.No.
               </Th>
-              <Th border="1px" borderColor="gray.300">
+              <Th border="1px" borderColor="gray.300" maxW="300px">
                 Particulars
               </Th>
               <Th border="1px" borderColor="gray.300" isNumeric>
@@ -243,14 +246,26 @@ export const SeetarInvoiceCard: FC<SeetarInvoiceCardProps> = (data) => {
               </Tr>
             ))}
           </Tbody>
+          <Tfoot borderTop="1px solid" borderColor="gray.300">
+            <Tr>
+              <Td colSpan={5}>
+                <strong>In Words:</strong> {numberToWords(grandTotal)} only
+              </Td>
+            </Tr>
+
+            {summary?.map(([label, value]) => (
+              <Tr key={label} sx={{ td: { paddingY: "1mm" } }}>
+                <Td textAlign="right" colSpan={4}>
+                  {label}
+                </Td>
+                <Td textAlign="left">{value}</Td>
+              </Tr>
+            ))}
+          </Tfoot>
         </Table>
       </TableContainer>
 
-      {/* Totals */}
-      <Box display="flex" justifyContent="space-between">
-        <Text>
-          <strong>In Words:</strong> {numberToWords(totalDue)} only
-        </Text>
+      {/* <Box display="flex" justifyContent="space-between">
         <VStack align="flex-end" spacing={1}>
           <Table variant="simple">
             <Tbody
@@ -268,7 +283,7 @@ export const SeetarInvoiceCard: FC<SeetarInvoiceCardProps> = (data) => {
             </Tbody>
           </Table>
         </VStack>
-      </Box>
+      </Box> */}
 
       <Box></Box>
 

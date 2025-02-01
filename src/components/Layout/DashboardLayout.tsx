@@ -2,9 +2,10 @@ import {
   Box,
   Flex,
   Link,
-  VStack,
+  HStack,
   Text,
   useColorModeValue,
+  Container,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
@@ -21,56 +22,65 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const borderColor = useColorModeValue("gray.200", "gray.700");
 
   return (
-    <Flex h="100vh" overflow="hidden">
-      {/* Sidebar */}
+    <Flex direction="column" h="100vh">
+      {/* Top Navigation */}
       <Box
-        w={{ base: "70px", md: "240px" }}
+        as="nav"
         bg={bgColor}
-        borderRight="1px"
+        borderBottom="1px"
         borderColor={borderColor}
-        py={4}
         position="fixed"
-        h="full"
+        w="full"
+        zIndex={10}
       >
-        <VStack spacing={2} align="stretch">
-          {menuItems.map((item) => (
+        <Container maxW="container.xl" py={3}>
+          <Flex justify="space-between" align="center">
             <Link
               as={NextLink}
-              key={item.path}
-              href={item.path}
-              px={4}
-              py={3}
-              borderRadius="md"
-              display="flex"
-              alignItems="center"
-              bg={router.pathname === item.path ? "blue.500" : "transparent"}
-              color={router.pathname === item.path ? "white" : "inherit"}
-              _hover={{
-                bg: router.pathname === item.path ? "blue.600" : "gray.100",
-                textDecoration: "none",
-              }}
+              href="/"
+              fontSize="xl"
+              fontWeight="bold"
+              color={useColorModeValue("gray.800", "white")}
             >
-              <Text fontSize="sm" display={{ base: "none", md: "block" }}>
-                {item.name}
-              </Text>
-              {/* Show only first letter on mobile */}
-              <Text fontSize="sm" display={{ base: "block", md: "none" }}>
-                {item.name[0]}
-              </Text>
+              Seetal Express
             </Link>
-          ))}
-        </VStack>
+
+            <HStack spacing={4}>
+              {menuItems.map((item) => (
+                <Link
+                  as={NextLink}
+                  key={item.path}
+                  href={item.path}
+                  px={4}
+                  py={2}
+                  borderRadius="md"
+                  bg={
+                    router.pathname === item.path ? "blue.500" : "transparent"
+                  }
+                  color={router.pathname === item.path ? "white" : "inherit"}
+                  _hover={{
+                    bg: router.pathname === item.path ? "blue.600" : "gray.100",
+                    textDecoration: "none",
+                  }}
+                >
+                  <Text fontSize="sm">{item.name}</Text>
+                </Link>
+              ))}
+            </HStack>
+          </Flex>
+        </Container>
       </Box>
 
       {/* Main Content */}
       <Box
-        ml={{ base: "70px", md: "240px" }}
+        pt="64px" // Height of the top nav + some padding
         w="full"
         h="full"
         overflowY="auto"
-        p={4}
       >
-        {children}
+        <Container maxW="container.xl" py={4}>
+          {children}
+        </Container>
       </Box>
     </Flex>
   );

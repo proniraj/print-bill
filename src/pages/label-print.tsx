@@ -11,6 +11,9 @@ import {
   HStack,
   Checkbox,
   Box,
+  Alert,
+  AlertIcon,
+  VStack,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
@@ -18,16 +21,53 @@ import DataInput from "@/components/DataInput/DataInput";
 import DataTable from "@/components/DataTable/DataTable";
 import PrintableContent from "@/components/PrintableContent/PrintableContent";
 import { ParsedData } from "@/utils/sheetParser";
+import { invoiceSchema, ValidationError } from "@/utils/validationSchema";
+import { z } from "zod";
 
 type TLabelSize = 6 | 8;
 
 const Page = () => {
   const [data, setData] = useState<ParsedData>([]);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
+    []
+  );
   const [labelType, setLabelType] = useState<TLabelSize>(8);
   const printContentRef = useRef<HTMLDivElement>(null);
 
+  const validateRow = (row: any, rowIndex: number): ValidationError[] => {
+    try {
+      // Convert string values to numbers for numeric fields
+      const processedRow = {
+        ...row,
+        COD: row.COD ? Number(row.COD) : undefined,
+        PP: row.PP ? Number(row.PP) : undefined,
+      };
+
+      invoiceSchema.parse(processedRow);
+      return [];
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return error.errors.map((err) => ({
+          field: err.path[0] as string,
+          message: err.message,
+          rowIndex,
+        }));
+      }
+      return [];
+    }
+  };
+
   const handleDataAvailable = (parsedData: ParsedData) => {
     setData(parsedData);
+
+    // Validate each row
+    const errors: ValidationError[] = [];
+    parsedData.forEach((row, index) => {
+      const rowErrors = validateRow(row, index);
+      errors.push(...rowErrors);
+    });
+
+    setValidationErrors(errors);
   };
 
   const handlePrint = useReactToPrint({
@@ -70,12 +110,12 @@ const Page = () => {
                 minRequiredCells: 3,
               }}
               headers={[
-                "Customer Name",
-                "Cell Number",
+                "CUSTOMER NAME",
+                "CELL NUMBER",
                 "ALT. NUM.",
-                "Full Address",
-                "Branch",
-                "Product",
+                "FULL ADDRESS",
+                "BRANCH",
+                "PRODUCT",
                 "COD",
                 "PP",
                 "Call 1",
@@ -89,6 +129,21 @@ const Page = () => {
             />
           </Box>
 
+          {validationErrors.length > 0 && (
+            <VStack align="stretch" spacing={2}>
+              <Alert status="error">
+                <AlertIcon />
+                Found {validationErrors.length} validation errors
+              </Alert>
+              {validationErrors.map((error, index) => (
+                <Alert key={index} status="error" size="sm">
+                  <AlertIcon />
+                  Row {error.rowIndex! + 1}: {error.field} - {error.message}
+                </Alert>
+              ))}
+            </VStack>
+          )}
+
           {data.length > 0 && (
             <Box mb={6}>
               <DataTable
@@ -96,6 +151,8 @@ const Page = () => {
                   Object.keys(data[0]),
                   ...data.map((row) => Object.values(row)),
                 ]}
+                hasError={validationErrors.length > 0}
+                errors={validationErrors}
                 emptyMessage="Upload or paste data to see results"
               />
             </Box>
@@ -141,6 +198,7 @@ const Page = () => {
                 variant="outline"
                 colorScheme="teal"
                 leftIcon={<PrintIcon />}
+                isDisabled={validationErrors.length > 0}
               >
                 Print Labels
               </Button>
