@@ -12,7 +12,6 @@ import {
   VStack,
   Divider,
   TableContainer,
-  Tfoot,
   Stack,
 } from "@chakra-ui/react";
 import { numberToWords } from "amount-to-words";
@@ -26,6 +25,23 @@ interface ParsedItem {
   rate: number;
   amount: number;
 }
+
+const itemPricesByCode = {
+  SB101: 2000,
+  SB102: 2000,
+  SB103: 2000,
+  SB104: 2000,
+  SB105: 2000,
+  SB106: 2000,
+  SB107: 2000,
+  SB108: 2000,
+  SB109: 2000,
+  SB110: 2000,
+  SB201: 2000,
+  SB202: 2000,
+  SB203: 2000,
+  SB205: 2000,
+};
 
 const formatCurrency = (amount: number) => {
   return `NPR.${amount.toFixed(2)}`;
@@ -41,7 +57,8 @@ const parseProducts = (productString: string = ""): ParsedItem[] => {
 
       const quantityMatch = colorSection.match(/\*(\d+)$/);
       const quantity = quantityMatch ? parseInt(quantityMatch[1]) : 1;
-      const rate = 2000;
+      const rate =
+        itemPricesByCode[codeSection as keyof typeof itemPricesByCode] || 2000;
 
       return {
         sno: index + 1,
@@ -60,11 +77,6 @@ const parseProducts = (productString: string = ""): ParsedItem[] => {
 };
 
 export const SeetarInvoiceCard: FC<SeetarInvoiceCardProps> = (data) => {
-  //   const items = parseProducts(data["PRODUCT"] as string);
-  //   const total = items.reduce((sum, item) => sum + item.amount, 0);
-  //   const discount = 0; // You can calculate discount based on your logic
-  //   const grandTotal = total - discount;
-
   const dueDate = new Date();
   dueDate.setDate(dueDate.getDate() + 15);
 
@@ -79,11 +91,8 @@ export const SeetarInvoiceCard: FC<SeetarInvoiceCardProps> = (data) => {
 
   const summary = [
     ["Subtotal", formatCurrency(subTotal)],
-    // ["Shipping Cost", formatCurrency(shippingCost)],
     ["Discount", formatCurrency(discount)],
     ["Grand Total", formatCurrency(grandTotal)],
-    // ["Paid", formatCurrency(prepaid)],
-    // ["Total Due", formatCurrency(totalDue)],
   ];
 
   return (

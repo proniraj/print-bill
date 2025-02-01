@@ -27,6 +27,23 @@ interface ParsedItem {
   total: number;
 }
 
+const itemPricesByCode = {
+  SB101: 3000,
+  SB102: 3000,
+  SB103: 3000,
+  SB104: 3000,
+  SB105: 3000,
+  SB106: 3000,
+  SB107: 3000,
+  SB108: 3000,
+  SB109: 3000,
+  SB110: 3000,
+  SB201: 3000,
+  SB202: 3000,
+  SB203: 3000,
+  SB205: 3000,
+};
+
 const parseProducts = (productString: string = ""): ParsedItem[] => {
   try {
     // Split products by comma
@@ -44,7 +61,8 @@ const parseProducts = (productString: string = ""): ParsedItem[] => {
       // Clean color name by removing quantity
       const color = colorSection.replace(/\*\d+$/, "").trim();
 
-      const unitPrice = 2000;
+      const unitPrice =
+        itemPricesByCode[codeSection as keyof typeof itemPricesByCode] || 2000;
 
       return {
         itemCode: codeSection,
