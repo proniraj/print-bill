@@ -21,6 +21,7 @@ import {
   Textarea,
   ModalFooter,
   useDisclosure,
+  HStack,
 } from "@chakra-ui/react";
 import {
   SheetParser,
@@ -133,22 +134,24 @@ export const DataInput: FC<DataInputProps> = ({
         <TabPanels>
           <TabPanel>
             <VStack spacing={4}>
-              <Button
-                colorScheme="blue"
-                onClick={handlePasteFromClipboard}
-                isLoading={isLoading}
-                leftIcon={<ClipboardIcon />}
-              >
-                Paste from Clipboard
-              </Button>
-              <Button
-                variant="outline"
-                colorScheme="blue"
-                onClick={onOpen}
-                leftIcon={<EditIcon />}
-              >
-                Manually Enter Data
-              </Button>
+              <HStack spacing={4}>
+                <Button
+                  colorScheme="blue"
+                  onClick={handlePasteFromClipboard}
+                  isLoading={isLoading}
+                  leftIcon={<ClipboardIcon />}
+                >
+                  Paste from Clipboard
+                </Button>
+                <Button
+                  variant="outline"
+                  colorScheme="blue"
+                  onClick={onOpen}
+                  leftIcon={<EditIcon />}
+                >
+                  Manually Enter Data
+                </Button>
+              </HStack>
               <Text fontSize="sm" color="gray.500">
                 Copy data from Excel or Google Sheets first
               </Text>
