@@ -1,7 +1,8 @@
 import { FC } from "react";
 import { Box } from "@chakra-ui/react";
-import InvoiceCard from "../InvoiceCard/InvoiceCard";
+// import InvoiceCard from "../InvoiceCard/InvoiceCard";
 import { ParsedData } from "@/utils/sheetParser";
+import SeetarInvoiceCard from "../SeetarInvoiceCard/SeetarInvoiceCard";
 
 interface InvoicePageProps {
   data: ParsedData;
@@ -33,7 +34,7 @@ export const InvoicePage: FC<InvoicePageProps> = ({ data }) => {
           },
         }}
       >
-        <InvoiceCard {...item} />
+        <SeetarInvoiceCard {...item} />
       </Box>
     </Box>
   ));
