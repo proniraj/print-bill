@@ -31,6 +31,12 @@ const itemPricesByCode = {
   SB101: 2200,
   SB102: 2200,
   SB103: 3500,
+  BB101: 1800,
+  BB102: 2200,
+  BB103: 2000,
+  MH101: 3200,
+  MH102: 3200,
+  MH103: 3200,
 };
 
 const formatCurrency = (amount: number) => {
