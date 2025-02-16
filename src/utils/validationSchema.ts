@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-const productCodeRegex = /^(SB|BB|MH)\d{3}$/;
-const productNameRegex = /[^*,|]+(\*\d+)?$/;
-const quantityRegex = /^\d+$/;
-
 // Helper function to validate product format
 const validateProductFormat = (value: string) => {
   // Handle empty string case
@@ -11,10 +7,7 @@ const validateProductFormat = (value: string) => {
 
   const products = value.split(",").map((p) => p.trim());
 
-  // const productRegex = /^(SB|BB|MH)\d{3}\|[^*,|]+(\*\d+)?$/;
-  const productRegex = new RegExp(
-    `^(${productCodeRegex.source})\\|(${productNameRegex.source})(\\*${quantityRegex.source})?$`
-  );
+  const productRegex = /^(SB|BB|MH)\d{3}\|[^*,|]+(\*\d+)?$/;
 
   const isValid = products.every((product) => productRegex.test(product));
   if (!isValid) {
@@ -24,8 +17,7 @@ const validateProductFormat = (value: string) => {
   // Validate product codes start with SB/BB/MH and have 3 digits
   const hasValidProductCodes = products.every((product) => {
     const code = product.split("|")[0];
-    // return /^(SB|BB|MH)\d{3}$/.test(code);
-    return productCodeRegex.test(code);
+    return /^(SB|BB|MH)\d{3}$/.test(code);
   });
 
   return hasValidProductCodes;
